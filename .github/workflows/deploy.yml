@@ -44,6 +44,7 @@ jobs:
       env:
         VITE_QWEATHER_API_KEY: ${{ secrets.QWEATHER_API_KEY }}
         NODE_ENV: production
+        VITE_BASE_URL: '/${{ github.event.repository.name }}/'
         
     - name: 📊 生成构建报告
       run: |
