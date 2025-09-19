@@ -48,8 +48,10 @@ try {
     },
     {
       name: 'Actions版本',
-      test: () => content.includes('actions/checkout@v4'),
-      fix: '使用最新的 actions 版本'
+      test: () => content.includes('actions/checkout@v4') && 
+                  content.includes('actions/upload-pages-artifact@v3') &&
+                  content.includes('actions/deploy-pages@v4'),
+      fix: '使用最新的 actions 版本（checkout@v4, upload-pages-artifact@v3, deploy-pages@v4）'
     },
     {
       name: '环境变量语法',

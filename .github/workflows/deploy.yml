@@ -21,13 +21,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # 构建和部署任务
-  build-and-deploy:
-    name: 🏗️ Build & Deploy
+  # 构建任务
+  build:
+    name: 🏗️ Build
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - name: 📥 Checkout代码
@@ -38,14 +35,6 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        
-    - name: 📋 缓存依赖
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
         
     - name: 🔧 安装依赖
       run: npm ci
@@ -66,22 +55,26 @@ jobs:
           echo "- 📂 构建产物大小: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
         fi
         
-    # GitHub Pages 部署
-    - name: 📄 配置GitHub Pages
-      uses: actions/configure-pages@v3
-      
-    - name: 📤 上传到GitHub Pages
-      uses: actions/upload-pages-artifact@v2
+    - name: 📤 上传构建产物
+      uses: actions/upload-pages-artifact@v3
       with:
         path: './dist'
-        
+
+  # 部署任务
+  deploy:
+    name: 🚀 Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
     - name: 🚀 部署到GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4
         
-    # 部署成功通知
     - name: 🎉 部署成功通知
-      if: success()
       run: |
         echo "## 🎉 部署成功!" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ GitHub Pages: 已部署" >> $GITHUB_STEP_SUMMARY
