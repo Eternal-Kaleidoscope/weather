@@ -1,14 +1,12 @@
 name: 🚀 Deploy Kaleidoscope's Weather
 
-# 触发条件：推送到主分支或develop分支时自动部署
+# 触发条件：推送到主分支时自动部署
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ main, master ]
     paths-ignore:
       - '**.md'
       - 'docs/**'
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch: # 手动触发
 
 # 设置权限
@@ -19,8 +17,8 @@ permissions:
 
 # 并发控制：避免同时运行多个部署
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   # 构建和部署任务
@@ -28,14 +26,12 @@ jobs:
     name: 🏗️ Build & Deploy
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
     - name: 📥 Checkout代码
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # 获取完整历史，用于版本标记
       
     - name: 📦 设置Node.js环境
       uses: actions/setup-node@v4
@@ -43,7 +39,7 @@ jobs:
         node-version: '18'
         cache: 'npm'
         
-    - name: 📋 缓存node_modules
+    - name: 📋 缓存依赖
       uses: actions/cache@v3
       with:
         path: ~/.npm
@@ -52,7 +48,7 @@ jobs:
           ${{ runner.os }}-node-
         
     - name: 🔧 安装依赖
-      run: npm ci --prefer-offline --no-audit
+      run: npm ci
       
     - name: 🏗️ 构建项目
       run: npm run build
@@ -60,54 +56,36 @@ jobs:
         VITE_QWEATHER_API_KEY: ${{ secrets.QWEATHER_API_KEY }}
         NODE_ENV: production
         
-    - name: 🧪 运行测试
-      run: npm test --if-present
-      
     - name: 📊 生成构建报告
       run: |
         echo "## 🎯 构建成功!" >> $GITHUB_STEP_SUMMARY
-        echo "构建时间: $(date)" >> $GITHUB_STEP_SUMMARY
-        echo "分支: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-        echo "提交: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 📅 构建时间: $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "- 🌿 分支: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 📦 提交: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
         if [ -d "dist" ]; then
-          echo "构建产物大小: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📂 构建产物大小: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
         fi
         
     # GitHub Pages 部署
     - name: 📄 配置GitHub Pages
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       uses: actions/configure-pages@v3
       
     - name: 📤 上传到GitHub Pages
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       uses: actions/upload-pages-artifact@v2
       with:
         path: './dist'
         
     - name: 🚀 部署到GitHub Pages
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       id: deployment
       uses: actions/deploy-pages@v2
         
-    # Vercel 部署（可选）
-    - name: 🌐 部署到Vercel
-      if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.VERCEL_TOKEN != ''
-      uses: amondnet/vercel-action@v25
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.ORG_ID }}
-        vercel-project-id: ${{ secrets.PROJECT_ID_VERCEL }}
-        vercel-args: '--prod'
-        working-directory: ./
-        
     # 部署成功通知
     - name: 🎉 部署成功通知
-      if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      if: success()
       run: |
         echo "## 🎉 部署成功!" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ GitHub Pages: 已部署" >> $GITHUB_STEP_SUMMARY
-        if [ "${{ secrets.VERCEL_TOKEN }}" != "" ]; then
-          echo "- ✅ Vercel: 已部署" >> $GITHUB_STEP_SUMMARY
-        fi
         echo "- 📅 部署时间: $(date)" >> $GITHUB_STEP_SUMMARY
-        echo "- 🔗 访问地址: https://${{ github.repository_owner }}.github.io/$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 访问地址: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🌈 **Kaleidoscope's Weather** 已成功部署到 GitHub Pages!" >> $GITHUB_STEP_SUMMARY
