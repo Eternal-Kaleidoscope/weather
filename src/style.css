@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 自定义样式 */
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  .weather-card {
+    @apply bg-white rounded-xl shadow-lg p-6 backdrop-blur-sm bg-opacity-90;
+  }
+  
+  .weather-icon {
+    @apply w-16 h-16 mx-auto mb-4;
+  }
+  
+  .temperature {
+    @apply text-4xl font-bold text-gray-800;
+  }
+  
+  .location-name {
+    @apply text-xl font-semibold text-gray-700 mb-2;
+  }
+  
+  .weather-desc {
+    @apply text-gray-600 text-sm mb-4;
+  }
+  
+  .weather-detail {
+    @apply flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0;
+  }
+  
+  .search-input {
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+  
+  .search-button {
+    @apply bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200;
+  }
+}

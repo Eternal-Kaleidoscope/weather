@@ -1,0 +1,52 @@
+{
+  "name": "kaleidoscope-weather",
+  "version": "1.0.0",
+  "description": "基于和风天气API的现代化天气预报应用，集成台风监测功能",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.ts --fix",
+    "type-check": "vue-tsc --noEmit",
+    "check": "node check-setup.js",
+    "deploy:check": "node scripts/deploy-check.js",
+    "deploy:build": "npm run deploy:check && npm run build",
+    "deploy:preview": "npm run deploy:build && npm run preview"
+  },
+  "dependencies": {
+    "@vueuse/core": "^10.5.0",
+    "axios": "^1.6.0",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-vue": "^9.19.2",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vue-tsc": "^1.8.25"
+  },
+  "keywords": [
+    "weather",
+    "vue",
+    "typhoon",
+    "qweather",
+    "forecast",
+    "responsive"
+  ],
+  "author": "Kaleidoscope Weather Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/kaleidoscope-weather.git"
+  },
+  "homepage": "https://yourusername.github.io/kaleidoscope-weather",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}
