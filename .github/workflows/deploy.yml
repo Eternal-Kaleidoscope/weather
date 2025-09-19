@@ -11,7 +11,7 @@ on:
 
 # 设置权限
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -21,9 +21,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # 构建任务
-  build:
-    name: 🏗️ Build
+  # 构建和部署任务（合并为一个作业）
+  build-and-deploy:
+    name: 🏗️ Build & Deploy
     runs-on: ubuntu-latest
     
     steps:
@@ -55,30 +55,25 @@ jobs:
           echo "- 📂 构建产物大小: $(du -sh dist | cut -f1)" >> $GITHUB_STEP_SUMMARY
         fi
         
-    - name: 📤 上传构建产物
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: './dist'
-
-  # 部署任务
-  deploy:
-    name: 🚀 Deploy
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
     - name: 🚀 部署到GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: '🚀 Deploy from ${{ github.sha }}'
         
     - name: 🎉 部署成功通知
       run: |
         echo "## 🎉 部署成功!" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ GitHub Pages: 已部署" >> $GITHUB_STEP_SUMMARY
         echo "- 📅 部署时间: $(date)" >> $GITHUB_STEP_SUMMARY
-        echo "- 🔗 访问地址: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 访问地址: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "🌈 **Kaleidoscope's Weather** 已成功部署到 GitHub Pages!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "📋 **重要提醒**: 如果这是首次部署，请到仓库设置中启用 GitHub Pages:" >> $GITHUB_STEP_SUMMARY
+        echo "1. 进入仓库 Settings → Pages" >> $GITHUB_STEP_SUMMARY
+        echo "2. Source 选择 'Deploy from a branch'" >> $GITHUB_STEP_SUMMARY
+        echo "3. Branch 选择 'gh-pages'" >> $GITHUB_STEP_SUMMARY
