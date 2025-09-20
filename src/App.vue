@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600">
     <!-- 头部 -->
-    <header class="bg-white bg-opacity-10 backdrop-blur-sm">
+    <header class="bg-white bg-opacity-10">
       <div class="container mx-auto px-4 py-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <h1 class="text-2xl font-bold text-white mb-4 sm:mb-0 flex items-center">
@@ -24,7 +24,7 @@
               <!-- 搜索建议下拉框 -->
               <div
                 v-if="searchSuggestions.length > 0"
-                class="absolute top-full left-0 right-0 bg-white rounded-lg shadow-lg mt-1 z-50 max-h-60 overflow-y-auto"
+                class="absolute  backdrop-blur-sm top-full left-0 right-0 bg-white rounded-lg shadow-lg mt-1 z-50 max-h-60 overflow-y-auto z-999"
               >
                 <div
                   v-for="city in searchSuggestions"
