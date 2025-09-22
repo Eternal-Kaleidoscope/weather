@@ -68,7 +68,7 @@
             <Icon name="sunny" size="20" color="currentColor" class="mr-2" />
             天气预报
           </button>
-          <button
+          <!-- <button
             @click="activeView = 'typhoon'"
             :class="[
               'px-6 py-3 font-medium text-sm transition-colors border-b-2',
@@ -79,7 +79,7 @@
             >
             <Icon name="typhoon" size="20" color="currentColor" class="mr-2" />
             台风监测
-          </button>
+          </button> -->
         </div>
       </div>
     </nav>
