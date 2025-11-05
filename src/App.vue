@@ -87,7 +87,7 @@
     <!-- 主内容区域 -->
     <main class="container mx-auto px-4 py-8">
       <!-- API状态说明 -->
-      <ApiStatus />
+      <!-- <ApiStatus /> -->
 
       <!-- 加载状态 -->
       <div v-if="loading && !currentWeather" class="text-center text-white">
